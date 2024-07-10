@@ -1,10 +1,10 @@
-import LoginModal from "@/app/(beforeLogin)/_component/LoginModal";
+import SignupModal from "@/app/(beforeLogin)/_component/SignupModal";
 
 export default function Page() {
   return (
     <>
       인터셉트 라우트
-      <LoginModal />
+      <SignupModal />
     </>
   );
 }
