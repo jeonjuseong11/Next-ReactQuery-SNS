@@ -13,7 +13,7 @@ export default function LogoutButton() {
   return (
     <div className={style.logOutButton} onClick={onLogout}>
       <div className={style.logOutUserImage}>
-        <img className={me.image} alt={me.id} />
+        <img src={me.image} alt={me.id} />
       </div>
       <div className={style.logOutUserName}>
         <div>{me.nickname}</div>
