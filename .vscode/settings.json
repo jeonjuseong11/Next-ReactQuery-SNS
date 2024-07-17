@@ -1,0 +1,7 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "workbench.colorCustomizations": {
+    "editorInlayHint.background": "#3f3f3f",
+    "editorInlayHint.foreground": "#c0c0c0"
+  }
+}
