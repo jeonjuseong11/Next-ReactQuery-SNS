@@ -27,13 +27,13 @@ export default function Post({ noImage }: Props) {
     Images: [] as any[],
   };
   if (Math.random() > 0.5 && !noImage) {
-    console.log("target", JSON.stringify(target));
-    target.Images.push(
-      { imageId: 1, link: faker.image.urlLoremFlickr() },
-      { imageId: 2, link: faker.image.urlLoremFlickr() },
-      { imageId: 3, link: faker.image.urlLoremFlickr() },
-      { imageId: 4, link: faker.image.urlLoremFlickr() }
-    );
+    const imageCount = Math.floor(Math.random() * 4) + 1; // 1에서 4 사이의 랜덤한 정수 생성
+    for (let i = 1; i <= imageCount; i++) {
+      target.Images.push({
+        imageId: i,
+        link: faker.image.urlLoremFlickr(),
+      });
+    }
   }
 
   return (
@@ -53,7 +53,9 @@ export default function Post({ noImage }: Props) {
               <span className={style.postUserId}>@{target.User.id}</span>
               &nbsp; · &nbsp;
             </Link>
-            <span className={style.postDate}>{dayjs(target.createdAt).fromNow(true)}</span>
+            <span className={style.postDate}>
+              {dayjs(target.createdAt).fromNow(true)}
+            </span>
           </div>
           <div>{target.content}</div>
           <div>
