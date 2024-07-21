@@ -1,8 +1,10 @@
 "use client";
-import style from "./logOutButton.module.css";
+
+import style from "./logoutButton.module.css";
 
 export default function LogoutButton() {
   const me = {
+    // 임시로 내 정보 있는것처럼
     id: "JEO1129",
     nickname: "주성",
     image: "/5Udwvqim.jpg",
@@ -11,7 +13,7 @@ export default function LogoutButton() {
   const onLogout = () => {};
 
   return (
-    <div className={style.logOutButton} onClick={onLogout}>
+    <button className={style.logOutButton} onClick={onLogout}>
       <div className={style.logOutUserImage}>
         <img src={me.image} alt={me.id} />
       </div>
@@ -19,6 +21,6 @@ export default function LogoutButton() {
         <div>{me.nickname}</div>
         <div>@{me.id}</div>
       </div>
-    </div>
+    </button>
   );
 }
