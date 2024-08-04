@@ -9,14 +9,11 @@ function generateDate() {
     to: Date.now(),
   });
 }
-
 const User = [
   { id: "elonmusk", nickname: "Elon Musk", image: "/yRsRRjGO.jpg" },
   { id: "zerohch0", nickname: "제로초", image: "/5Udwvqim.jpg" },
-  { id: "jeo1129", nickname: "전주성", image: "/5Udwvqim.jpg" },
   { id: "leoturtle", nickname: "레오", image: faker.image.avatar() },
 ];
-
 const Posts = [];
 
 export const handlers = [
@@ -38,16 +35,16 @@ export const handlers = [
   }),
   http.post("/api/users", async ({ request }) => {
     console.log("회원가입");
-    return HttpResponse.text(JSON.stringify("user_exists"), {
-      status: 403,
+    // return HttpResponse.text(JSON.stringify('user_exists'), {
+    //   status: 403,
+    // })
+    return HttpResponse.text(JSON.stringify("ok"), {
+      headers: {
+        "Set-Cookie": "connect.sid=msw-cookie;HttpOnly;Path=/",
+      },
     });
-    // return HttpResponse.text(JSON.stringify("ok"), {
-    //   headers: {
-    //     "Set-Cookie": "connect.sid=msw-cookie;HttpOnly;Path=/",
-    //   },
-    // });
   }),
-  http.get("/api/postRecommends", ({ request }) => {
+  http.get("/api/postRecommends", async ({ request }) => {
     const url = new URL(request.url);
     const cursor = parseInt(url.searchParams.get("cursor") as string) || 0;
     return HttpResponse.json([
@@ -100,7 +97,7 @@ export const handlers = [
       },
     ]);
   }),
-  http.get("/api/followingPosts", ({ request }) => {
+  http.get("/api/followingPosts", async ({ request }) => {
     return HttpResponse.json([
       {
         postId: 1,
