@@ -10,10 +10,12 @@
     "mock": "npx tsx watch ./src/mocks/http.ts"
   },
   "dependencies": {
+    "@auth/core": "^0.34.2",
     "@faker-js/faker": "^8.4.1",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.11",
     "next": "14.2.4",
+    "next-auth": "^5.0.0-beta.20",
     "react": "^18",
     "react-dom": "^18"
   },
