@@ -2,13 +2,13 @@ import style from "./home.module.css";
 import Tab from "@/app/(afterLogin)/home/_component/Tab";
 import TabProvider from "@/app/(afterLogin)/home/_component/TabProvider";
 import PostForm from "@/app/(afterLogin)/home/_component/PostForm";
-import Post from "@/app/(afterLogin)/_component/Post";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getPostRecommends } from "./_lib/getPostRecommends";
+import { getPostRecommends } from "@/app/(afterLogin)/home/_lib/getPostRecommends";
+import PostRecommends from "@/app/(afterLogin)/home/_component/PostRecommends";
 
 export default async function Home() {
   const queryClient = new QueryClient();
@@ -24,18 +24,7 @@ export default async function Home() {
         <TabProvider>
           <Tab />
           <PostForm />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
-          <Post />
+          <PostRecommends />
         </TabProvider>
       </HydrationBoundary>
     </main>

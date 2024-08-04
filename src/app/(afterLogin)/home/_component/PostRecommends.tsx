@@ -6,5 +6,9 @@ import Post from "@/app/(afterLogin)/_component/Post";
 import { Post as IPost } from "@/model/Post";
 
 export default function PostRecommends() {
-  const { data } = useQuery<IPost[]>({ queryKey: [] });
+  const { data } = useQuery<IPost[]>({
+    queryKey: ["posts", "recommends"],
+    queryFn: getPostRecommends,
+  });
+  return data?.map((post) => <Post key={post.postId} post={post} />);
 }

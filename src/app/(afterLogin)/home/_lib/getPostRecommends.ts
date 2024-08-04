@@ -1,10 +1,11 @@
 export async function getPostRecommends() {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/recommends?cursor=${pageParam}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/postRecommends`,
     {
       next: {
         tags: ["posts", "recommends"],
       },
+      cache: "no-store",
     }
   );
   // The return value is *not* serialized
