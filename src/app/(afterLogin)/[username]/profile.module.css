@@ -34,6 +34,9 @@
   align-items: center;
   margin-right: 12px;
   border-radius: 50%;
+  width: 134px;
+  height: 134px;
+  border: 1px solid lightgray;
 }
 .userImage img {
   width: 134px;
@@ -80,4 +83,13 @@
 }
 .backButton:hover {
   background-color: rgba(15, 20, 25, 0.1);
+}
+
+.noAccountContents {
+  height: 100;
+  font-size: 31;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
