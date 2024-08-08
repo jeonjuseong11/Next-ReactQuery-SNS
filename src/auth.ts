@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextResponse } from "next/server";
 
 export const {
   handlers: { GET, POST },
@@ -14,19 +13,16 @@ export const {
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
-        const authResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/login`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: credentials.username,
-              password: credentials.password,
-            }),
-          }
-        );
+        const authResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: credentials.username,
+            password: credentials.password,
+          }),
+        });
 
         if (!authResponse.ok) {
           return null;
