@@ -2,7 +2,7 @@
 
 import style from "@/app/(beforeLogin)/_component/login.module.css";
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 export default function LoginModal() {
@@ -13,20 +13,28 @@ export default function LoginModal() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setMessage(""); // 기존 메시지 초기화
+
     try {
-      const result = await signIn("credentials", {
+      const response = await signIn("credentials", {
         username: id,
         password,
         redirect: false,
       });
-      console.log(result);
-      router.replace("/home");
+
+      // 응답 상태 코드가 200이 아닌 경우 실패 처리
+      if (response?.error) {
+        console.error("Login failed:", response);
+        setMessage("아이디와 비밀번호가 일치하지 않습니다.");
+      } else {
+        router.replace("/home");
+      }
     } catch (err) {
-      console.error(err);
-      setMessage("아이디와 비밀번호가 일치하지 않습니다.");
+      console.error("Error during login:", err);
+      setMessage("서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
   };
+
   const onClickClose = () => {
     router.back();
   };
