@@ -4,6 +4,8 @@ import { ChangeEventHandler, FormEventHandler, useRef, useState } from "react";
 import style from "./postForm.module.css";
 import { Session } from "@auth/core/types";
 import TextareaAutosize from "react-textarea-autosize";
+import { useQueryClient } from "@tanstack/react-query";
+import { Post } from "@/model/Post";
 
 type Props = { me: Session | null };
 
@@ -11,22 +13,44 @@ export default function PostForm({ me }: Props) {
   const imageRef = useRef<HTMLInputElement>(null);
   const [content, setContent] = useState("");
   const [preview, setPreview] = useState<Array<{ dataUrl: string; file: File } | null>>([]);
+  const queryClient = useQueryClient();
+
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setContent(e.target.value);
   };
 
-  const onSubmit: FormEventHandler = (e) => {
+  const onSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("content", content);
     preview.forEach((p) => {
       p && formData.append("images", p.file);
     });
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
-      method: "post",
-      credentials: "include",
-      body: formData,
-    });
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: "post",
+        credentials: "include",
+        body: formData,
+      });
+      if (response.status === 201) {
+        setContent("");
+        setPreview([]);
+        const newPost = await response.json();
+        if (queryClient.getQueryData(["posts", "recommends"])) {
+          queryClient.setQueryData(["posts", "recommends"], (prevData: { pages: Post[][] }) => {
+            const shallow = {
+              ...prevData,
+              pages: [...prevData.pages],
+            };
+            shallow.pages[0] = [...shallow.pages[0]];
+            shallow.pages[0].unshift(newPost);
+            return shallow;
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const onClickButton = () => {
