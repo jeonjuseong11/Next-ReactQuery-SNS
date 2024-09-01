@@ -1,76 +1,77 @@
 "use client";
 
-import { ChangeEventHandler, FormEventHandler, useRef, useState } from "react";
+import { ChangeEventHandler, FormEvent, FormEventHandler, useRef, useState } from "react";
 import style from "./postForm.module.css";
 import { Session } from "@auth/core/types";
 import TextareaAutosize from "react-textarea-autosize";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Post } from "@/model/Post";
 
-type Props = { me: Session | null };
-
+type Props = {
+  me: Session | null;
+};
 export default function PostForm({ me }: Props) {
   const imageRef = useRef<HTMLInputElement>(null);
-  const [content, setContent] = useState("");
   const [preview, setPreview] = useState<Array<{ dataUrl: string; file: File } | null>>([]);
+  const [content, setContent] = useState("");
   const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (e: FormEvent) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append("content", content);
+      preview.forEach((p) => {
+        p && formData.append("images", p.file);
+      });
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
+        method: "post",
+        credentials: "include",
+        body: formData,
+      });
+    },
+    async onSuccess(response, variable, context) {
+      // response - 응답
+      // variable - mutationFn에 사용한 값
+      // context - mutationFn에서 return 한 값
+      const newPost = await response.json();
+      setContent("");
+      setPreview([]);
+      if (queryClient.getQueryData(["posts", "recommends"])) {
+        queryClient.setQueryData(["posts", "recommends"], (prevData: { pages: Post[][] }) => {
+          const shallow = {
+            ...prevData,
+            pages: [...prevData.pages],
+          };
+          shallow.pages[0] = [...shallow.pages[0]];
+          shallow.pages[0].unshift(newPost);
+          return shallow;
+        });
+      }
+      if (queryClient.getQueryData(["posts", "followings"])) {
+        queryClient.setQueryData(["posts", "followings"], (prevData: { pages: Post[][] }) => {
+          const shallow = {
+            ...prevData,
+            pages: [...prevData.pages],
+          };
+          shallow.pages[0] = [...shallow.pages[0]];
+          shallow.pages[0].unshift(newPost);
+          return shallow;
+        });
+      }
+    },
+    onError(error) {
+      console.error(error);
+      alert("업로드 중 에러가 발생했습니다.");
+    },
+  });
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setContent(e.target.value);
   };
 
-  const onSubmit: FormEventHandler = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("content", content);
-    preview.forEach((p) => {
-      p && formData.append("images", p.file);
-    });
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`, {
-        method: "post",
-        credentials: "include",
-        body: formData,
-      });
-      if (response.status === 201) {
-        setContent("");
-        setPreview([]);
-        const newPost = await response.json();
-        if (queryClient.getQueryData(["posts", "recommends"])) {
-          queryClient.setQueryData(["posts", "recommends"], (prevData: { pages: Post[][] }) => {
-            const shallow = {
-              ...prevData,
-              pages: [...prevData.pages],
-            };
-            shallow.pages[0] = [...shallow.pages[0]];
-            shallow.pages[0].unshift(newPost);
-            return shallow;
-          });
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const onClickButton = () => {
     imageRef.current?.click();
-  };
-  const onUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
-    e.preventDefault();
-    if (e.target.files) {
-      Array.from(e.target.files).forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview((prevPreview) => {
-            const prev = [...prevPreview];
-            prev[index] = { dataUrl: reader.result as string, file };
-            return prev;
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    }
   };
 
   const onRemoveImage = (index: number) => () => {
@@ -81,8 +82,28 @@ export default function PostForm({ me }: Props) {
     });
   };
 
+  const onUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
+    e.preventDefault();
+    if (e.target.files) {
+      Array.from(e.target.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview((prevPreview) => {
+            const prev = [...prevPreview];
+            prev[index] = {
+              dataUrl: reader.result as string,
+              file,
+            };
+            return prev;
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
   return (
-    <form className={style.postForm} onSubmit={onSubmit}>
+    <form className={style.postForm} onSubmit={mutation.mutate}>
       <div className={style.postUserSection}>
         <div className={style.postUserImage}>
           <img src={me?.user?.image as string} alt={me?.user?.email as string} />
