@@ -4,6 +4,8 @@ import { useSession } from "next-auth/react";
 import style from "./modal.module.css";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import TextareaAutosize from "react-textarea-autosize";
+
 export default function TweetModal() {
   const [content, setContent] = useState();
   const router = useRouter();
@@ -39,7 +41,7 @@ export default function TweetModal() {
               </div>
             </div>
             <div className={style.inputDiv}>
-              <textarea
+              <TextareaAutosize
                 className={style.input}
                 placeholder="무슨 일이 일어나고 있나요?"
                 value={content}

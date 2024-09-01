@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import style from "./commentForm.module.css";
 import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
+import TextareaAutosize from "react-textarea-autosize";
 
 type Props = { id: string };
 
@@ -29,7 +30,7 @@ export default function CommentForm({ id }: Props) {
         </div>
       </div>
       <div className={style.postInputSection}>
-        <textarea value={content} onChange={onChange} placeholder="답글 게시하기" />
+        <TextareaAutosize value={content} onChange={onChange} placeholder="답글 게시하기" />
         <div className={style.postButtonSection}>
           <div className={style.footerButtons}>
             <div className={style.footerButtonLeft}>
